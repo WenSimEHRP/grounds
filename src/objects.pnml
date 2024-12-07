@@ -1,0 +1,106 @@
+#define SPRITE_OBJECT_ENTRIES(num, path) \
+    [0, 0, 64, 31, -31,  0, path + "/" + num + "/0.png"] \
+    [0, 0, 64, 31, -31,  0, path + "/" + num + "/1.png"] \
+    [0, 0, 64, 23, -31,  0, path + "/" + num + "/2.png"] \
+    [0, 0, 64, 23, -31,  0, path + "/" + num + "/3.png"] \
+    [0, 0, 64, 31, -31,  0, path + "/" + num + "/4.png"] \
+    [0, 0, 64, 31, -31,  0, path + "/" + num + "/5.png"] \
+    [0, 0, 64, 23, -31,  0, path + "/" + num + "/6.png"] \
+    [0, 0, 64, 23, -31,  0, path + "/" + num + "/7.png"] \
+    [0, 0, 64, 39, -31, -8, path + "/" + num + "/8.png"] \
+    [0, 0, 64, 39, -31, -8, path + "/" + num + "/9.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/" + num + "/10.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/" + num + "/11.png"] \
+    [0, 0, 64, 39, -31, -8, path + "/" + num + "/12.png"] \
+    [0, 0, 64, 39, -31, -8, path + "/" + num + "/13.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/" + num + "/14.png"] \
+    [0, 0, 64, 47, -31, -16,path + "/" + num + "/15.png"] \
+    [0, 0, 64, 15, -31,  0, path + "/" + num + "/16.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/" + num + "/17.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/" + num + "/18.png"] \
+
+#define SPRITESET_OBJECTS_4_VIEWS(name, path) \
+spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
+    SPRITE_OBJECT_ENTRIES("0", path) \
+    SPRITE_OBJECT_ENTRIES("1", path) \
+    SPRITE_OBJECT_ENTRIES("2", path) \
+    SPRITE_OBJECT_ENTRIES("3", path) \
+}
+
+#define SPRITESET_OBJECTS_2_VIEWS(name, path) \
+spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
+    SPRITE_OBJECT_ENTRIES("0", path) \
+    SPRITE_OBJECT_ENTRIES("1", path) \
+} \
+
+#define SPRITESET_OBJECTS_1_VIEW(name, path) \
+spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
+    SPRITE_OBJECT_ENTRIES("0", path) \
+}
+
+#define SPRITELAYOUT_OBJECTS(name) \
+spritelayout sp_##name { \
+    ground {sprite: 3981 + slope_to_sprite_offset(tile_slope);} \
+    childsprite {sprite: s_##name(slope_to_sprite_offset(tile_slope) + 19 * view);} \
+}
+
+#define SPRITELAYOUT_PURCHASE_OBJECTS(name) \
+spritelayout spp_##name { \
+    ground {sprite: 3981;} \
+    childsprite {sprite: s_##name(19 * view);} \
+}
+
+#define SPRITELAYOUT_OBJECTS_ORIGINAL(name, a, b, c, d) \
+spritelayout sp_##name { \
+    ground {sprite: view == 0 ? a + slope_to_sprite_offset(tile_slope) \
+                  : view == 1 ? b + slope_to_sprite_offset(tile_slope) \
+                  : view == 2 ? c + slope_to_sprite_offset(tile_slope) \
+                              : d + slope_to_sprite_offset(tile_slope) \
+    ;} \
+}
+
+#define SPRITELAYOUT_PURCHASE_OBJECTS_ORIGINAL(name, a, b, c, d) \
+spritelayout spp_##name { \
+    ground {sprite: view == 0 ? a : view == 1 ? b : view == 2 ? c : d;} \
+}
+
+#define ITEM_GROUND_OBJECT(obj_name, obj_class, views) \
+item (FEAT_OBJECTS, obj_##obj_name) { \
+    property { \
+        class:                  obj_class; \
+        classname:              string(STR_PLACEHOLDER); \
+        name:                   string(STR_PLACEHOLDER); \
+        climates_available:     ALL_CLIMATES; \
+        size:                   [1,1]; \
+        build_cost_multiplier:  0; \
+        remove_cost_multiplier: 0; \
+        introduction_date:      date(0,1,1); \
+        end_of_life_date:       0xFFFFFFFF; \
+        height:                 0; \
+        num_views:              views; \
+        object_flags:           bitmask(OBJ_FLAG_ANYTHING_REMOVE, OBJ_FLAG_REMOVE_IS_INCOME, OBJ_FLAG_ALLOW_BRIDGE,OBJ_FLAG_NO_FOUNDATIONS); \
+    } \
+    graphics { \
+        purchase:               spp_##obj_name; \
+        default:                sp_##obj_name; \
+        autoslope:              CB_RESULT_AUTOSLOPE; \
+        tile_check:             CB_RESULT_LOCATION_ALLOW; \
+    } \
+}
+
+#define GROUND_OBJECT_4_VIEWS(name, obj_class, path) \
+SPRITESET_OBJECTS_4_VIEWS(name, path) \
+SPRITELAYOUT_OBJECTS(name) \
+SPRITELAYOUT_PURCHASE_OBJECTS(name) \
+ITEM_GROUND_OBJECT(name, obj_class, 4)
+
+#define GROUND_OBJECT_1_VIEW(name, obj_class, path) \
+SPRITESET_OBJECTS_1_VIEW(name, path) \
+SPRITELAYOUT_OBJECTS(name) \
+SPRITELAYOUT_PURCHASE_OBJECTS(name) \
+ITEM_GROUND_OBJECT(name, obj_class, 1)
+
+#define GROUND_OBJECT_4_VIEWS_ORIGINAL(name, obj_class, a, b, c, d) \
+SPRITELAYOUT_OBJECTS_ORIGINAL(name, a, b, c, d) \
+SPRITELAYOUT_PURCHASE_OBJECTS_ORIGINAL(name, a, b, c, d) \
+ITEM_GROUND_OBJECT(name, obj_class, 4)

@@ -1,0 +1,9 @@
+#include "src/header.pnml"
+#include "src/objects.pnml"
+
+GROUND_OBJECT_1_VIEW(gray_brick_1, "WGND", "gfx/grounds/gray_brick_1")
+GROUND_OBJECT_1_VIEW(cliff_1, "WGND", "gfx/grounds/cliff_1")
+GROUND_OBJECT_4_VIEWS_ORIGINAL(orginal_land_1, "WGND", 3924, 3943, 3962, 4023)
+GROUND_OBJECT_4_VIEWS_ORIGINAL(orginal_land_2, "WGND", 4493, 4512, 4531, 4550)
+GROUND_OBJECT_4_VIEWS_ORIGINAL(orginal_farmland_1, "WGND", 4126, 4145, 4164, 4183)
+GROUND_OBJECT_4_VIEWS_ORIGINAL(orginal_farmland_2, "WGND", 4202, 4221, 4240, 4259)
