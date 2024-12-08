@@ -11,9 +11,12 @@ preprocess:
 
 # compile using nmlc
 compile:
-    nmlc -c {{file}}.nml --md5={{file}}.md5 --nml={{file}}_parsed.nml --grf={{file}}.grf
+    nml/nmlc -c {{file}}.nml --md5={{file}}.md5 --nml={{file}}_parsed.nml --grf={{file}}.grf
     cat {{file}}.md5
 
 # copy to openttd newgrf directory (linux)
 cp:
     cp ./{{file}}.grf ~/.local/share/openttd/newgrf/
+
+check:
+    nml/nmlc {{file}}_parsed.nml
