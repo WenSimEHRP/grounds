@@ -1,3 +1,68 @@
+const TILE_SPRITE_OFFSET = 0;
+const ON_COAST = 1;
+const NEARBY_WATER_STATUS = 2;
+const ON_COAST_SHOW_SEA = 4;
+
+
+switch (FEAT_OBJECTS, SELF, sw_check_nearby_water_status,
+    (nearby_tile_height(0,0) == 0) *
+    (
+    ((nearby_tile_water_class(-1,-1) != WATER_CLASS_NONE) << 0) |
+    ((nearby_tile_water_class( 0,-1) != WATER_CLASS_NONE) << 1) |
+    ((nearby_tile_water_class( 1,-1) != WATER_CLASS_NONE) << 2) |
+    ((nearby_tile_water_class(-1, 0) != WATER_CLASS_NONE) << 3) |
+    ((nearby_tile_water_class( 0, 0) != WATER_CLASS_NONE) << 4) |
+    ((nearby_tile_water_class( 1, 0) != WATER_CLASS_NONE) << 5) |
+    ((nearby_tile_water_class(-1, 1) != WATER_CLASS_NONE) << 6) |
+    ((nearby_tile_water_class( 0, 1) != WATER_CLASS_NONE) << 7) |
+    ((nearby_tile_water_class( 1, 1) != WATER_CLASS_NONE) << 8) |
+    // combined
+    (((nearby_tile_water_class( 0,-1) != WATER_CLASS_NONE) || (nearby_tile_water_class(-1, 0) != WATER_CLASS_NONE) || (nearby_tile_water_class(-1,-1) != WATER_CLASS_NONE)) << 9) |
+    (((nearby_tile_water_class( 0, 1) != WATER_CLASS_NONE) || (nearby_tile_water_class(-1, 0) != WATER_CLASS_NONE) || (nearby_tile_water_class(-1, 1) != WATER_CLASS_NONE)) <<10) |
+    (((nearby_tile_water_class( 0, 1) != WATER_CLASS_NONE) || (nearby_tile_water_class( 1, 0) != WATER_CLASS_NONE) || (nearby_tile_water_class( 1, 1) != WATER_CLASS_NONE)) <<11) |
+    (((nearby_tile_water_class( 0,-1) != WATER_CLASS_NONE) || (nearby_tile_water_class( 1, 0) != WATER_CLASS_NONE) || (nearby_tile_water_class( 1,-1) != WATER_CLASS_NONE)) <<12))
+) {return;}
+
+
+switch (FEAT_OBJECTS, SELF, sw_on_coast_show_sea, LOAD_TEMP(TILE_SPRITE_OFFSET)) {
+    1: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 10, 1);
+    2: getbits(LOAD_TEMP(NEARBY_WATER_STATUS),  9, 1);
+    4: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 12, 1);
+    8: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 11, 1);
+    default: 0;
+}
+
+switch (FEAT_OBJECTS, SELF, sw_on_coast, LOAD_TEMP(TILE_SPRITE_OFFSET)){
+    1:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 10, 1);
+    2:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 9, 1);
+    3:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 3, 1);
+    4:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 12, 1);
+    6:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 1, 1);
+    7:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 0, 1);
+    8:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 11, 1);
+    9:  getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 7, 1);
+    11: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 6, 1);
+    12: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 5, 1);
+    13: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 8, 1);
+    14: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 2, 1);
+    15: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 8, 1);
+    16: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 0, 1);
+    17: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 6, 1);
+    18: getbits(LOAD_TEMP(NEARBY_WATER_STATUS), 2, 1);
+    0:  0;
+    5:  0;
+    10: 0;
+    default: 0;
+}
+
+#define SW_STORE_VALUES(name) \
+switch (FEAT_OBJECTS, SELF, sw_store_values_##name, [ \
+    STORE_TEMP(slope_to_sprite_offset(tile_slope),  TILE_SPRITE_OFFSET), \
+    STORE_TEMP(sw_check_nearby_water_status(),      NEARBY_WATER_STATUS), \
+    STORE_TEMP(sw_on_coast(),                       ON_COAST), \
+    STORE_TEMP(sw_on_coast_show_sea(),              ON_COAST_SHOW_SEA), \
+]) {return sp_##name;}
+
 #define SPRITE_OBJECT_ENTRIES(num, path) \
     [0, 0, 64, 31, -31,  0, path + "/" + num + "/0.png"] \
     [0, 0, 64, 31, -31,  0, path + "/" + num + "/1.png"] \
@@ -19,6 +84,27 @@
     [0, 0, 64, 31, -31, -8, path + "/" + num + "/17.png"] \
     [0, 0, 64, 31, -31, -8, path + "/" + num + "/18.png"] \
 
+#define SPRITE_OBJECT_ENTRIES_COAST(path) \
+    [] \
+    [0, 0, 64, 31, -31,  0, path + "/coast/1.png"] \
+    [0, 0, 64, 23, -31,  0, path + "/coast/2.png"] \
+    [] \
+    [0, 0, 64, 31, -31,  0, path + "/coast/4.png"] \
+    [] \
+    [] \
+    [0, 0, 64, 23, -31,  0, path + "/coast/7.png"] \
+    [0, 0, 64, 39, -31, -8, path + "/coast/8.png"] \
+    [] \
+    [] \
+    [0, 0, 64, 31, -31, -8, path + "/coast/11.png"] \
+    [] \
+    [0, 0, 64, 39, -31, -8, path + "/coast/13.png"] \
+    [0, 0, 64, 31, -31, -8, path + "/coast/14.png"] \
+    [] \
+    [] \
+    [] \
+    [] \
+
 #define SPRITESET_OBJECTS_4_VIEWS(name, path) \
 spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
     SPRITE_OBJECT_ENTRIES("0", path) \
@@ -35,19 +121,21 @@ spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
 
 #define SPRITESET_OBJECTS_1_VIEW(name, path) \
 spriteset (s_##name, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) { \
+    SPRITE_OBJECT_ENTRIES_COAST(path) \
     SPRITE_OBJECT_ENTRIES("0", path) \
 }
 
 #define SPRITELAYOUT_OBJECTS(name) \
 spritelayout sp_##name { \
-    ground {sprite: 3981 + slope_to_sprite_offset(tile_slope);} \
-    childsprite {sprite: s_##name(slope_to_sprite_offset(tile_slope) + 19 * view);} \
+    ground {sprite: LOAD_TEMP(ON_COAST) ? 4061 : 3981 + LOAD_TEMP(TILE_SPRITE_OFFSET);} \
+    childsprite {sprite: s_##name(LOAD_TEMP(TILE_SPRITE_OFFSET) + 19 * (view + 1 - LOAD_TEMP(ON_COAST_SHOW_SEA))); always_draw: 1;} \
+    childsprite {sprite: s_coastline(LOAD_TEMP(TILE_SPRITE_OFFSET)); hide_sprite: !LOAD_TEMP(ON_COAST); always_draw: 1;} \
 }
 
 #define SPRITELAYOUT_PURCHASE_OBJECTS(name) \
 spritelayout spp_##name { \
     ground {sprite: 3981;} \
-    childsprite {sprite: s_##name(19 * view);} \
+    childsprite {sprite: s_##name(19 * (view + 1));} \
 }
 
 #define SPRITELAYOUT_OBJECTS_ORIGINAL(name, a, b, c, d) \
@@ -64,7 +152,7 @@ spritelayout spp_##name { \
     ground {sprite: view == 0 ? a : view == 1 ? b : view == 2 ? c : d;} \
 }
 
-#define ITEM_GROUND_OBJECT(obj_name, obj_class, views) \
+#define ITEM_GROUND_OBJECT(obj_name, obj_class, views, type) \
 item (FEAT_OBJECTS, obj_##obj_name) { \
     property { \
         class:                  obj_class; \
@@ -74,15 +162,13 @@ item (FEAT_OBJECTS, obj_##obj_name) { \
         size:                   [1,1]; \
         build_cost_multiplier:  0; \
         remove_cost_multiplier: 0; \
-        introduction_date:      date(0,1,1); \
-        end_of_life_date:       0xFFFFFFFF; \
         height:                 0; \
         num_views:              views; \
         object_flags:           bitmask(OBJ_FLAG_ANYTHING_REMOVE, OBJ_FLAG_REMOVE_IS_INCOME, OBJ_FLAG_ALLOW_BRIDGE,OBJ_FLAG_NO_FOUNDATIONS); \
     } \
     graphics { \
         purchase:               spp_##obj_name; \
-        default:                sp_##obj_name; \
+        default:                type##_##obj_name; \
         autoslope:              CB_RESULT_AUTOSLOPE; \
         tile_check:             CB_RESULT_LOCATION_ALLOW; \
     } \
@@ -92,15 +178,39 @@ item (FEAT_OBJECTS, obj_##obj_name) { \
 SPRITESET_OBJECTS_4_VIEWS(name, path) \
 SPRITELAYOUT_OBJECTS(name) \
 SPRITELAYOUT_PURCHASE_OBJECTS(name) \
-ITEM_GROUND_OBJECT(name, obj_class, 4)
+SW_STORE_VALUES(name) \
+ITEM_GROUND_OBJECT(name, obj_class, 4, sw_store_values)
 
 #define GROUND_OBJECT_1_VIEW(name, obj_class, path) \
 SPRITESET_OBJECTS_1_VIEW(name, path) \
 SPRITELAYOUT_OBJECTS(name) \
 SPRITELAYOUT_PURCHASE_OBJECTS(name) \
-ITEM_GROUND_OBJECT(name, obj_class, 1)
+SW_STORE_VALUES(name) \
+ITEM_GROUND_OBJECT(name, obj_class, 1, sw_store_values)
 
 #define GROUND_OBJECT_4_VIEWS_ORIGINAL(name, obj_class, a, b, c, d) \
 SPRITELAYOUT_OBJECTS_ORIGINAL(name, a, b, c, d) \
 SPRITELAYOUT_PURCHASE_OBJECTS_ORIGINAL(name, a, b, c, d) \
-ITEM_GROUND_OBJECT(name, obj_class, 4)
+ITEM_GROUND_OBJECT(name, obj_class, 4, sp)
+
+spriteset (s_coastline) {
+    []
+    [0, 0, 64, 31, -31,  0,  ANIM, "gfx/grounds/coastline/1.png"]
+    [0, 0, 64, 23, -31,  0,  ANIM, "gfx/grounds/coastline/2.png"]
+    [0, 0, 64, 23, -31,  0,  ANIM, "gfx/grounds/coastline/3.png"]
+    [0, 0, 64, 31, -31,  0,  ANIM, "gfx/grounds/coastline/4.png"]
+    []
+    [0, 0, 64, 23, -31,  0,  ANIM, "gfx/grounds/coastline/6.png"]
+    [0, 0, 64, 23, -31,  0,  ANIM, "gfx/grounds/coastline/7.png"]
+    [0, 0, 64, 39, -31, -8,  ANIM, "gfx/grounds/coastline/8.png"]
+    [0, 0, 64, 39, -31, -8,  ANIM, "gfx/grounds/coastline/9.png"]
+    []
+    [0, 0, 64, 31, -31, -8,  ANIM, "gfx/grounds/coastline/11.png"]
+    [0, 0, 64, 39, -31, -8,  ANIM, "gfx/grounds/coastline/12.png"]
+    [0, 0, 64, 39, -31, -8,  ANIM, "gfx/grounds/coastline/13.png"]
+    [0, 0, 64, 31, -31, -8,  ANIM, "gfx/grounds/coastline/14.png"]
+    [0, 0, 64, 47, -31, -16, ANIM, "gfx/grounds/coastline/15.png"]
+    [0, 0, 64, 15, -31,  0,  ANIM, "gfx/grounds/coastline/16.png"]
+    [0, 0, 64, 31, -31, -8,  ANIM, "gfx/grounds/coastline/17.png"]
+    [0, 0, 64, 31, -31, -8,  ANIM, "gfx/grounds/coastline/18.png"]
+}
