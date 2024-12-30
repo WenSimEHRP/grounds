@@ -4,8 +4,8 @@ spriteset(s_${name}, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) {
     $normal_2
     $coastline_2
     $normal_snow
-    $normal_2_snow
     $coastline_snow
+    $normal_2_snow
     $coastline_2_snow
 }
 

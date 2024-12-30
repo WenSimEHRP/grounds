@@ -93,8 +93,8 @@ def gen_grounds_spriteset_entries(path):
             "normal_2",
             "coastline_2",
             "normal_snow",
-            "normal_2_snow",
             "coastline_snow",
+            "normal_2_snow",
             "coastline_2_snow",
         )
     }
