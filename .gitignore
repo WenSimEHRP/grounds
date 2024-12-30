@@ -1,4 +1,6 @@
 *.nml
+*.gnml
 *.grf
 *.log
 .nmlcache
+*.pyc
