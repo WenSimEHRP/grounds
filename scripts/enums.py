@@ -100,5 +100,5 @@ def gen_grounds_spriteset_entries(path):
     }
 
 if __name__ == "__main__":
-    for i in gen_grounds_spriteset_entries("gfx/grounds/gray_brick_1").values():
+    for i in gen_grounds_spriteset_entries("gfx/grounds/gray_bricks").values():
         print(i)

@@ -33,7 +33,7 @@ if __name__ == "__main__":
         "src/items.pynml",
         "src/items.gnml",
         {
-            "name": "gray_brick_1",
-            **enums.gen_grounds_spriteset_entries("gfx/grounds/gray_brick_1")
+            "name": "gray_bricks",
+            **enums.gen_grounds_spriteset_entries("gfx/grounds/gray_bricks")
         },
     )

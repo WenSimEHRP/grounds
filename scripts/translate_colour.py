@@ -35,13 +35,13 @@ def enhance_rgb_and_lightness(
 if __name__ == "__main__":
     import glob
 
-    for file in glob.glob("gfx/grounds/gray_brick_1/**/*.png", recursive=True):
+    for file in glob.glob("gfx/grounds/gray_bricks/**/*.png", recursive=True):
         if file.endswith("_enhanced.png"):
             continue
 
         print(f"Enhancing {file}")
 
-        # example: gfx/grounds/gray_brick_1/coastline/xxx.png
+        # example: gfx/grounds/gray_bricks/coastline/xxx.png
         splitted = file.split("/")
         if splitted[-2].endswith("_snow"):
             continue
