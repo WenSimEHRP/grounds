@@ -4,9 +4,9 @@ spriteset(s_${name}, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) {
     $normal_2
     $coastline_2
     $normal_snow
-    $normal_snow_2
+    $normal_2_snow
     $coastline_snow
-    $coastline_snow_2
+    $coastline_2_snow
 }
 
 spritelayout sp_${name} {
