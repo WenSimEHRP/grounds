@@ -1,7 +1,3 @@
 #include "src/header.pnml"
-#include "src/objects.pnml"
-
-// macro artist!
-
-GROUND_OBJECT_1_VIEW(gray_brick_1, "WGND", "gfx/grounds/gray_brick_1")
-// GROUND_OBJECT_1_VIEW(cliff_1, "WGND", "gfx/grounds/cliff_1")
+#include "src/objects.gnml"
+#include "src/items.gnml"
