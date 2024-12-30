@@ -7,6 +7,7 @@ def: preprocess compile
 
 # preprocess using gcc
 preprocess:
+    python3 scripts/fill_enums.py
     gcc -E -x c {{file}}.pnml > {{file}}.nml
 
 # compile using nmlc
@@ -17,6 +18,7 @@ compile:
 # copy to openttd newgrf directory (linux)
 cp:
     cp ./{{file}}.grf ~/.local/share/openttd/newgrf/
+
 
 check:
     nml/nmlc {{file}}_parsed.nml
