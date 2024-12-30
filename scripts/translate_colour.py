@@ -1,5 +1,5 @@
 from PIL import Image, ImageEnhance
-
+import re
 
 def enhance_rgb_and_lightness(
     image_path,
@@ -10,6 +10,10 @@ def enhance_rgb_and_lightness(
     lightness_factor,
     contrast_factor,
 ):
+    if not re.match(r".*\d{1,2}\.png$", image_path):
+        print(f"Skipping {image_path} because it doesn't match the pattern")
+        return
+
     image = Image.open(image_path)
 
     if image.mode == "RGBA":
@@ -35,9 +39,18 @@ if __name__ == "__main__":
         if file.endswith("_enhanced.png"):
             continue
 
+        print(f"Enhancing {file}")
+
+        # example: gfx/grounds/gray_brick_1/coastline/xxx.png
+        splitted = file.split("/")
+        if splitted[-2].endswith("_snow"):
+            continue
+        splitted[-2] = splitted[-2] + "_snow"
+        output_path = "/".join(splitted)
+
         enhance_rgb_and_lightness(
             file,
-            file.replace(".png", "_enhanced.png"),
+            output_path,
             r_factor=0.7,
             g_factor=0.85,
             b_factor=1.4,
