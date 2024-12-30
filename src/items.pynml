@@ -38,13 +38,21 @@ spritelayout sp_${name} {
 }
 
 spritelayout spp_${name} {
-    ground {sprite: GROUNDSPRITE_NORMAL + 13;}
-    childsprite {sprite: s_${name}(
-        (
-            (view / 2 == 1 ? 2 : 0) +
-            (view % 2 == 1 ? 1 : 0)
-        ) * slope_count + 13
-    );}
+    ground {
+        sprite: (
+            climate == CLIMATE_ARCTIC ? GROUNDSPRITE_SNOW :
+            climate == CLIMATE_TROPIC ? GROUNDSPRITE_DESERT :
+            GROUNDSPRITE_NORMAL
+        ) + 13;
+    }
+    childsprite {
+        sprite: s_${name}(
+            (
+                (view / 2 == 1 ? 2 : 0) +
+                (view % 2 == 1 ? 1 : 0)
+            ) * slope_count + 13
+        );
+    }
 }
 
 switch (FEAT_OBJECTS, SELF, sw_store_values_${name}, [
