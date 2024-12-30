@@ -1,0 +1,81 @@
+spriteset(s_${name}, ZOOM_LEVEL_NORMAL, BIT_DEPTH_32BPP) {
+    $normal
+    $coastline
+    $normal_2
+    $coastline_2
+    $normal_snow
+    $normal_snow_2
+    $coastline_snow
+    $coastline_snow_2
+}
+
+spritelayout sp_${name} {
+    ground {
+        sprite: LOAD_TEMP(TEMP_ON_COAST_SHOW_SEA) ? 4061 : LOAD_TEMP(TEMP_GROUND) + LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET);
+    }
+    childsprite {
+        sprite: s_${name}(
+            (
+                (LOAD_TEMP(TEMP_IS_SNOW) ? 4 : 0) +
+                (view / 2 == 1 ? 2 : 0) +
+                (
+                    (
+                        view % 2 == 1 ?
+                            LOAD_TEMP(TEMP_ON_SLANTED_SLOPE) :
+                            LOAD_TEMP(TEMP_ON_COAST_SHOW_SEA)
+                    ) ? 1 : 0
+                )
+            ) * slope_count +
+            LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET)
+        );
+        always_draw: 1;
+    }
+    childsprite {
+        sprite: s_coastline(LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET));
+        hide_sprite: !LOAD_TEMP(TEMP_ON_COAST);
+        always_draw: 1;
+    }
+}
+
+spritelayout spp_${name} {
+    ground {sprite: GROUNDSPRITE_NORMAL + 13;}
+    childsprite {sprite: s_${name}(
+        (
+            (view / 2 == 1 ? 2 : 0) +
+            (view % 2 == 1 ? 1 : 0)
+        ) * slope_count + 13
+    );}
+}
+
+switch (FEAT_OBJECTS, SELF, sw_store_values_${name}, [
+    STORE_TEMP(slope_to_sprite_offset(tile_slope),  TEMP_TILE_SPRITE_OFFSET),
+    STORE_TEMP(sw_check_nearby_water_status(),      TEMP_NEARBY_WATER_STATUS),
+    STORE_TEMP(sw_on_coast(),                       TEMP_ON_COAST),
+    STORE_TEMP(sw_on_coast_show_sea(),              TEMP_ON_COAST_SHOW_SEA),
+    STORE_TEMP(sw_on_slanted_slope(),               TEMP_ON_SLANTED_SLOPE),
+    STORE_TEMP(sw_ground(),                         TEMP_GROUND),
+    STORE_TEMP(terrain_type == TILETYPE_SNOW,       TEMP_IS_SNOW),
+]) {
+    default: sp_${name};
+}
+
+item (FEAT_OBJECTS, obj_${name}) {
+    property {
+        class:                  "WGND";
+        classname:              string(STR_PLACEHOLDER);
+        name:                   string(STR_PLACEHOLDER);
+        climates_available:     ALL_CLIMATES;
+        size:                   [1,1];
+        build_cost_multiplier:  0;
+        remove_cost_multiplier: 0;
+        height:                 0;
+        num_views:              4;
+        object_flags:           bitmask(OBJ_FLAG_ANYTHING_REMOVE, OBJ_FLAG_REMOVE_IS_INCOME, OBJ_FLAG_ALLOW_BRIDGE,OBJ_FLAG_NO_FOUNDATIONS);
+    }
+    graphics {
+        purchase:               spp_${name};
+        default:                sw_store_values_${name};
+        autoslope:              CB_RESULT_AUTOSLOPE;
+        tile_check:             CB_RESULT_LOCATION_ALLOW;
+    }
+}

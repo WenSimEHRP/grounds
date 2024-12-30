@@ -1,0 +1,111 @@
+#define POS_N_coor -1,-1
+#define POS_NE_coor -1,0
+#define POS_E_coor -1,1
+#define POS_SE_coor 0,1
+#define POS_S_coor 1,1
+#define POS_SW_coor 1,0
+#define POS_W_coor 1,-1
+#define POS_NW_coor 0,-1
+#define POS_C_coor 0,0
+
+const slope_count = 19;
+
+$temp_enums
+
+spriteset (s_coastline) {
+    []
+    [0, 0, 64, 31, -31,  0, ANIM, "gfx/grounds/coastline/1.png"]
+    [0, 0, 64, 23, -31,  0, ANIM, "gfx/grounds/coastline/2.png"]
+    [0, 0, 64, 23, -31,  0, ANIM, "gfx/grounds/coastline/3.png"]
+    [0, 0, 64, 31, -31,  0, ANIM, "gfx/grounds/coastline/4.png"]
+    []
+    [0, 0, 64, 23, -31,  0, ANIM, "gfx/grounds/coastline/6.png"]
+    [0, 0, 64, 23, -31,  0, ANIM, "gfx/grounds/coastline/7.png"]
+    [0, 0, 64, 39, -31, -8, ANIM, "gfx/grounds/coastline/8.png"]
+    [0, 0, 64, 39, -31, -8, ANIM, "gfx/grounds/coastline/9.png"]
+    []
+    [0, 0, 64, 31, -31, -8, ANIM, "gfx/grounds/coastline/11.png"]
+    [0, 0, 64, 39, -31, -8, ANIM, "gfx/grounds/coastline/12.png"]
+    [0, 0, 64, 39, -31, -8, ANIM, "gfx/grounds/coastline/13.png"]
+    [0, 0, 64, 31, -31, -8, ANIM, "gfx/grounds/coastline/14.png"]
+    [0, 0, 64, 47, -31, -16,ANIM, "gfx/grounds/coastline/15.png"]
+    [0, 0, 64, 15, -31,  0, ANIM, "gfx/grounds/coastline/16.png"]
+    [0, 0, 64, 31, -31, -8, ANIM, "gfx/grounds/coastline/17.png"]
+    [0, 0, 64, 31, -31, -8, ANIM, "gfx/grounds/coastline/18.png"]
+}
+
+switch (FEAT_OBJECTS, SELF, sw_check_nearby_water_status,
+    (nearby_tile_height(POS_C_coor) == 0) *
+    (
+    ((nearby_tile_water_class(POS_N_coor)  != WATER_CLASS_NONE) << 0) |
+    ((nearby_tile_water_class(POS_NW_coor) != WATER_CLASS_NONE) << 1) |
+    ((nearby_tile_water_class(POS_W_coor)  != WATER_CLASS_NONE) << 2) |
+    ((nearby_tile_water_class(POS_NE_coor) != WATER_CLASS_NONE) << 3) |
+    ((nearby_tile_water_class(POS_C_coor)  != WATER_CLASS_NONE) << 4) |
+    ((nearby_tile_water_class(POS_SW_coor) != WATER_CLASS_NONE) << 5) |
+    ((nearby_tile_water_class(POS_E_coor)  != WATER_CLASS_NONE) << 6) |
+    ((nearby_tile_water_class(POS_SE_coor) != WATER_CLASS_NONE) << 7) |
+    ((nearby_tile_water_class(POS_S_coor)  != WATER_CLASS_NONE) << 8) |
+    // combined
+    (((nearby_tile_water_class(POS_NW_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_NE_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_N_coor) != WATER_CLASS_NONE)) << 9) |
+    (((nearby_tile_water_class(POS_SE_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_NE_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_E_coor) != WATER_CLASS_NONE)) <<10) |
+    (((nearby_tile_water_class(POS_SE_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_SW_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_S_coor) != WATER_CLASS_NONE)) <<11) |
+    (((nearby_tile_water_class(POS_NW_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_SW_coor) != WATER_CLASS_NONE) || (nearby_tile_water_class(POS_W_coor) != WATER_CLASS_NONE)) <<12))
+) {return;}
+
+
+switch (FEAT_OBJECTS, SELF, sw_on_coast_show_sea, LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET)) {
+    1: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 10);
+    2: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 9);
+    4: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 12);
+    8: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 11);
+    default: 0;
+}
+
+switch (FEAT_OBJECTS, SELF, sw_on_slanted_slope, LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET)) {
+    1:  1;
+    2:  1;
+    4:  1;
+    8:  1;
+    14: 1;
+    7:  1;
+    11: 1;
+    13: 1;
+    default: 0;
+}
+
+switch (FEAT_OBJECTS, SELF, sw_on_coast, LOAD_TEMP(TEMP_TILE_SPRITE_OFFSET)){
+    1:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 10);
+    2:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 9);
+    3:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 3);
+    4:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 12);
+    6:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 1);
+    7:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 0);
+    8:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 11);
+    9:  hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 7);
+    11: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 6);
+    12: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 5);
+    13: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 8);
+    14: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 2);
+    15: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 8);
+    16: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 0);
+    17: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 6);
+    18: hasbit(LOAD_TEMP(TEMP_NEARBY_WATER_STATUS), 2);
+    0:  0;
+    5:  0;
+    10: 0;
+    default: 0;
+}
+
+switch (FEAT_OBJECTS, SELF, sw_ground_arctic, [nearby_tile_height(POS_C_coor) - snowline_height]) {
+    2..255:     GROUNDSPRITE_SNOW;
+    1:          GROUNDSPRITE_SNOW_3_4;
+    0:          GROUNDSPRITE_SNOW_2_4;
+    -1:         GROUNDSPRITE_SNOW_1_4;
+    default:    GROUNDSPRITE_NORMAL;
+}
+
+switch (FEAT_OBJECTS, SELF, sw_ground, climate) {
+    CLIMATE_ARCTIC: sw_ground_arctic();
+    default: terrain_type == TILETYPE_DESERT ? GROUNDSPRITE_DESERT : GROUNDSPRITE_NORMAL;
+}
