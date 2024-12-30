@@ -26,14 +26,15 @@ def fill_enums(template_path, output_path, labels: dict):
 if __name__ == "__main__":
     fill_enums(
         "src/objects.pynml",
-        "src/objects.gnml", # generated... nml?
+        "src/objects.gnml",  # generated... nml?
         {"temp_enums": enums.temp_labels.to_string("const $ind = $val;")},
     )
-    fill_enums(
-        "src/items.pynml",
-        "src/items.gnml",
-        {
-            "name": "gray_bricks",
-            **enums.gen_grounds_spriteset_entries("gfx/grounds/gray_bricks")
-        },
-    )
+    simple_grounds = ("gray_bricks",)
+    for e in simple_grounds:
+        fill_enums(
+            "src/items.pynml",
+            f"src/items_{e}.gnml",
+            {"name": e, **enums.gen_grounds_spriteset_entries(f"gfx/grounds/{e}")},
+        )
+    with open("src/items.gnml", "w+") as f:
+        f.write(enums.LabelEnums(simple_grounds).to_string("#include \"items_${ind}.gnml\""))
