@@ -9,6 +9,7 @@ def enhance_rgb_and_lightness(
     b_factor,
     lightness_factor,
     contrast_factor,
+    saturation_factor,
 ):
     if not re.match(r".*\d{1,2}\.png$", image_path):
         print(f"Skipping {image_path} because it doesn't match the pattern")
@@ -29,6 +30,7 @@ def enhance_rgb_and_lightness(
     image_enhanced = Image.merge("RGBA", (r, g, b, a))
     image_enhanced = ImageEnhance.Contrast(image_enhanced).enhance(contrast_factor)
     image_enhanced = ImageEnhance.Brightness(image_enhanced).enhance(lightness_factor)
+    image_enhanced = ImageEnhance.Color(image_enhanced).enhance(saturation_factor)
     image_enhanced.save(output_path)
 
 
@@ -51,9 +53,10 @@ if __name__ == "__main__":
         enhance_rgb_and_lightness(
             file,
             output_path,
-            r_factor=0.7,
+            r_factor=0.67,
             g_factor=0.85,
             b_factor=1.4,
             lightness_factor=1.6,
             contrast_factor=1.12,
+            saturation_factor=0.5,
         )
